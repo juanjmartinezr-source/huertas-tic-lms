@@ -34,10 +34,10 @@
   </main>
 
   <!-- Modal de recursos (agregar al final de body) -->
-  <div id="resourceModal" class="resource-modal" aria-hidden="true">
-    <div class="resource-modal__backdrop" id="modalBackdrop"></div>
-    <div class="resource-modal__panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-      <header class="resource-modal__header">
+  <div id="resourceModal" class="resource-modal" aria-hidden="true" style="display:none;align-items:center;justify-content:center;position:fixed;inset:0;z-index:2000;">
+    <div id="modalBackdrop" style="position:absolute;inset:0;background:rgba(0,0,0,0.5)"></div>
+    <div class="resource-modal__panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle" style="position:relative;max-width:1000px;width:96%;max-height:90vh;overflow:auto;background:var(--card);padding:12px;border-radius:8px;z-index:2010;">
+      <header class="resource-modal__header" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
         <h2 id="modalTitle">Recursos</h2>
         <button id="closeModal" class="btn">Cerrar</button>
       </header>
@@ -50,7 +50,7 @@
   <script src="js/auth.js"></script>
   <script src="js/app.js"></script>
   <script>
-  // Curso: muestra recursos del módulo 1 en modal; previsualiza imágenes, PDF y YouTube, otros abren en pestaña
+  // Curso: muestra recursos de cualquier módulo en modal; previsualiza imágenes, PDF y YouTube, otros abren en pestaña
   document.addEventListener('DOMContentLoaded', async () => {
     async function loadModulesJson(){
       try{
@@ -70,7 +70,9 @@
     modules.forEach(m => {
       const el = document.createElement('article');
       el.className = 'card module';
-      el.innerHTML = `<h3>${m.title}</h3><p>${m.description}</p><a class="btn view-res" data-id="${m.id}" href="#">Ver recursos</a>`;
+      // show number of resources
+      const count = (m.resources||[]).length;
+      el.innerHTML = `<h3>${escapeHtml(m.title)}</h3><p>${escapeHtml(m.description)}</p><div class="row" style="margin-top:8px"><a class="btn view-res" data-id="${m.id}" href="#">Ver recursos (${count})</a></div>`;
       container.appendChild(el);
     });
 
@@ -81,10 +83,12 @@
     const backdrop = document.getElementById('modalBackdrop');
 
     function openModal(){
+      modal.style.display = 'flex';
       modal.setAttribute('aria-hidden','false');
       document.body.style.overflow = 'hidden';
     }
     function close(){
+      modal.style.display = 'none';
       modal.setAttribute('aria-hidden','true');
       modalContent.innerHTML = '';
       document.body.style.overflow = '';
@@ -94,27 +98,27 @@
     document.addEventListener('keydown', (e) => { if(e.key === 'Escape') close(); });
 
     // helpers
-    function isImage(url){ return /\.(png|jpe?g|gif|webp)$/i.test(url); }
-    function isPDF(url){ return /\.pdf$/i.test(url); }
+    function isImage(url){ return /\.(png|jpe?g|gif|webp|svg)(?:[?#].*)?$/i.test(url); }
+    function isPDF(url){ return /\.(pdf)(?:[?#].*)?$/i.test(url); }
     function isYouTube(url){ return /youtube\.com|youtu\.be/i.test(url); }
+    function isOffice(url){ return /\.(pptx|ppt|docx|doc|xlsx|xls)(?:[?#].*)?$/i.test(url); }
 
     function normalizeUrl(filename){
       if(!filename) return '';
+      // already a full URL
       if(/^https?:\/\//i.test(filename)) return filename;
-      // archivo local en el repo (ruta relativa); encodeURI para espacios/acento
-      return encodeURI(filename);
+      // filename likely refers to a repo file at root; create raw.githubusercontent URL
+      // encode path correctly
+      const encoded = encodeURI(filename.replace(/\\s/g,'%20'));
+      return `https://raw.githubusercontent.com/juanjmartinezr-source/huertas-tic-lms/main/${encoded}`;
     }
 
-    // show resources only for module 1
+    // container click: open resources modal for any module
     container.addEventListener('click', (ev) => {
       const btn = ev.target.closest('.view-res');
       if(!btn) return;
       ev.preventDefault();
       const id = Number(btn.dataset.id);
-      if(id !== 1){
-        alert('Por ahora los recursos sólo se muestran para Módulo 1.');
-        return;
-      }
       const mod = modules.find(x => Number(x.id) === id);
       if(!mod) return alert('Módulo no encontrado');
 
@@ -125,68 +129,78 @@
         return;
       }
 
-      mod.resources.forEach(r => {
+      mod.resources.forEach((r, idx) => {
         const row = document.createElement('div');
         row.className = 'resource-item';
+        row.style.display = 'flex'; row.style.gap = '12px'; row.style.alignItems = 'flex-start'; row.style.marginBottom = '12px';
+
         const url = normalizeUrl(r.filename || r.url || '');
-        const thumbHtml = isImage(url) ? `<img src="${url}" alt="${r.title}">` : `<div style="width:140px;height:90px;border-radius:6px;background:rgba(0,0,0,0.03);display:flex;align-items:center;justify-content:center;color:var(--muted)">${r.type || ''}</div>`;
-        row.innerHTML = `<div class="resource-meta">${thumbHtml}</div>
-                         <div style="flex:1">
-                           <div><strong>${r.title || r.filename}</strong></div>
-                           <div class="small" style="margin-top:6px">${r.filename}</div>
-                           <div class="resource-actions" style="margin-top:8px">
-                             <button class="btn preview" data-url="${url}">Previsualizar</button>
-                             <button class="btn open" data-url="${url}">Abrir en pestaña</button>
-                           </div>
-                         </div>`;
-        const preview = document.createElement('div');
-        preview.className = 'resource-preview';
-        row.appendChild(preview);
+
+        const meta = document.createElement('div');
+        meta.style.flex = '1';
+        meta.innerHTML = `<div><strong>${escapeHtml(r.title || r.filename || 'Recurso')}</strong></div>
+                          <div class="small" style="margin-top:6px">${escapeHtml(r.filename || '')}</div>
+                          <div class="resource-actions" style="margin-top:8px">
+                            <button class="btn preview" data-url="${encodeURI(url)}">Previsualizar</button>
+                            <button class="btn open" data-url="${encodeURI(url)}">Abrir en pestaña</button>
+                          </div>`;
+
+        const thumb = document.createElement('div');
+        thumb.style.width = '140px'; thumb.style.height = '90px'; thumb.style.borderRadius = '6px'; thumb.style.overflow='hidden'; thumb.style.flex='0 0 140px';
+        if(isImage(url)){
+          const img = document.createElement('img'); img.src = url; img.style.width='100%'; img.style.height='100%'; img.style.objectFit='cover'; thumb.appendChild(img);
+        } else {
+          thumb.style.background = 'linear-gradient(180deg, rgba(0,0,0,0.03), rgba(0,0,0,0.02))';
+          thumb.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:12px;color:var(--muted)">${escapeHtml((r.type||'Documento').toString())}</div>`;
+        }
+
+        row.appendChild(thumb);
+        row.appendChild(meta);
         modalContent.appendChild(row);
 
-        const previewBtn = row.querySelector('.preview');
-        const openBtn = row.querySelector('.open');
+        const previewBtn = meta.querySelector('.preview');
+        const openBtn = meta.querySelector('.open');
 
         previewBtn.addEventListener('click', () => {
-          preview.innerHTML = '';
-          if(!url){ preview.innerHTML = '<p class="small">URL inválida</p>'; return; }
+          const previewArea = row.querySelector('.resource-preview');
+          // remove previous inline preview if any
+          let existing = row.querySelector('iframe, img');
+          if(existing) existing.remove();
+
+          if(!url){ alert('URL inválida'); return; }
           if(isImage(url)){
-            const img = document.createElement('img'); img.src = url; preview.appendChild(img);
+            const img = document.createElement('img'); img.src = url; img.style.maxWidth='400px'; img.style.maxHeight='60vh'; img.style.objectFit='contain'; row.appendChild(img);
           } else if(isPDF(url)){
-            const iframe = document.createElement('iframe'); iframe.src = url; preview.appendChild(iframe);
+            const iframe = document.createElement('iframe'); iframe.src = url; iframe.style.width='100%'; iframe.style.height='600px'; iframe.style.border='0'; row.appendChild(iframe);
           } else if(isYouTube(url)){
-            let vid = '';
-            try{ const m = url.match(/(?:v=|youtu\\.be\/)([A-Za-z0-9_-]{6,})/); vid = m ? m[1] : null; }catch(e){ vid = null; }
+            const vid = (function(u){ try{ const uu = new URL(u); if(uu.hostname.includes('youtu.be')) return uu.pathname.slice(1); if(uu.hostname.includes('youtube.com')) return uu.searchParams.get('v'); }catch(e){return null;} return null; })(url);
             if(vid){
-              const iframe = document.createElement('iframe');
-              iframe.src = `https://www.youtube.com/embed/${vid}`;
-              iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
-              preview.appendChild(iframe);
+              const iframe = document.createElement('iframe'); iframe.src = `https://www.youtube.com/embed/${vid}`; iframe.width='100%'; iframe.height='480'; iframe.frameBorder='0'; row.appendChild(iframe);
             } else {
-              preview.innerHTML = '<p class="small">No se puede previsualizar este enlace. Se abrirá en una nueva pestaña.</p>';
               window.open(url,'_blank');
             }
+          } else if(isOffice(url)){
+            // embed via Office viewer
+            const viewer = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)}`;
+            const iframe = document.createElement('iframe'); iframe.src = viewer; iframe.style.width='100%'; iframe.style.height='600px'; iframe.style.border='0'; row.appendChild(iframe);
           } else {
-            preview.innerHTML = '<p class="small">Previsualización no disponible para este formato. Se abrirá en una nueva pestaña.</p>';
+            // fallback: open in new tab
             window.open(url,'_blank');
           }
         });
 
         openBtn.addEventListener('click', () => {
           if(!url) return alert('URL inválida');
-          // preferir raw.githubusercontent si el archivo es local y quieres forzar descarga/visualización cruda
-          if(!/^https?:\/\//i.test(r.filename) && r.filename){
-            // archivo en repo raíz: construimos la ruta pública en GH Pages relativa
-            const localUrl = normalizeUrl(r.filename);
-            window.open(localUrl, '_blank');
-          } else {
-            window.open(url, '_blank');
-          }
+          window.open(url, '_blank');
         });
+
       });
 
       openModal();
     });
+
+    function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
+
   });
   </script>
 </body>
