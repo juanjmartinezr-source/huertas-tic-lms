@@ -33,23 +33,161 @@
     </section>
   </main>
 
+  <!-- Modal de recursos (agregar al final de body) -->
+  <div id="resourceModal" class="resource-modal" aria-hidden="true">
+    <div class="resource-modal__backdrop" id="modalBackdrop"></div>
+    <div class="resource-modal__panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <header class="resource-modal__header">
+        <h2 id="modalTitle">Recursos</h2>
+        <button id="closeModal" class="btn">Cerrar</button>
+      </header>
+      <main id="modalContent" class="resource-modal__content">
+        <!-- contenido dinámico -->
+      </main>
+    </div>
+  </div>
+
   <script src="js/auth.js"></script>
   <script src="js/app.js"></script>
   <script>
-    const modules = [
-      { id:1, title:"Módulo 1 - Introducción a las Huertas TIC Colombianas", description:"Contexto y objetivos." },
-      { id:2, title:"Módulo 2 - Agricultura sostenible", description:"Practicas sostenibles."},
-      { id:3, title:"Módulo 3 - Altitud, Temperatura, Humedad y su efecto", description:"Clima y su impacto."},
-      { id:4, title:"Módulo 4 - Tecnologías aplicadas (Sensors, Arduino, ESP32, IoT)", description:"TIC y herramientas."},
-      { id:5, title:"Módulo 5 - Diseño de una huerta inteligente", description:"Proyecto final."}
-    ];
+  // Curso: muestra recursos del módulo 1 en modal; previsualiza imágenes, PDF y YouTube, otros abren en pestaña
+  document.addEventListener('DOMContentLoaded', async () => {
+    async function loadModulesJson(){
+      try{
+        const res = await fetch('json/modules.json');
+        if(!res.ok) throw new Error('No modules');
+        return await res.json();
+      }catch(e){
+        console.error(e);
+        return [];
+      }
+    }
+
+    const modules = await loadModulesJson();
     const container = document.getElementById('modules');
+    container.innerHTML = '';
+
     modules.forEach(m => {
       const el = document.createElement('article');
       el.className = 'card module';
-      el.innerHTML = `<h3>${m.title}</h3><p>${m.description}</p><a class="btn" href="#">Ver recursos</a>`;
+      el.innerHTML = `<h3>${m.title}</h3><p>${m.description}</p><a class="btn view-res" data-id="${m.id}" href="#">Ver recursos</a>`;
       container.appendChild(el);
     });
+
+    // modal elements
+    const modal = document.getElementById('resourceModal');
+    const modalContent = document.getElementById('modalContent');
+    const closeModal = document.getElementById('closeModal');
+    const backdrop = document.getElementById('modalBackdrop');
+
+    function openModal(){
+      modal.setAttribute('aria-hidden','false');
+      document.body.style.overflow = 'hidden';
+    }
+    function close(){
+      modal.setAttribute('aria-hidden','true');
+      modalContent.innerHTML = '';
+      document.body.style.overflow = '';
+    }
+    closeModal.addEventListener('click', close);
+    backdrop.addEventListener('click', close);
+    document.addEventListener('keydown', (e) => { if(e.key === 'Escape') close(); });
+
+    // helpers
+    function isImage(url){ return /\.(png|jpe?g|gif|webp)$/i.test(url); }
+    function isPDF(url){ return /\.pdf$/i.test(url); }
+    function isYouTube(url){ return /youtube\.com|youtu\.be/i.test(url); }
+
+    function normalizeUrl(filename){
+      if(!filename) return '';
+      if(/^https?:\/\//i.test(filename)) return filename;
+      // archivo local en el repo (ruta relativa); encodeURI para espacios/acento
+      return encodeURI(filename);
+    }
+
+    // show resources only for module 1
+    container.addEventListener('click', (ev) => {
+      const btn = ev.target.closest('.view-res');
+      if(!btn) return;
+      ev.preventDefault();
+      const id = Number(btn.dataset.id);
+      if(id !== 1){
+        alert('Por ahora los recursos sólo se muestran para Módulo 1.');
+        return;
+      }
+      const mod = modules.find(x => Number(x.id) === id);
+      if(!mod) return alert('Módulo no encontrado');
+
+      modalContent.innerHTML = '';
+      if(!mod.resources || !mod.resources.length){
+        modalContent.innerHTML = '<p class="small">No hay recursos para este módulo.</p>';
+        openModal();
+        return;
+      }
+
+      mod.resources.forEach(r => {
+        const row = document.createElement('div');
+        row.className = 'resource-item';
+        const url = normalizeUrl(r.filename || r.url || '');
+        const thumbHtml = isImage(url) ? `<img src="${url}" alt="${r.title}">` : `<div style="width:140px;height:90px;border-radius:6px;background:rgba(0,0,0,0.03);display:flex;align-items:center;justify-content:center;color:var(--muted)">${r.type || ''}</div>`;
+        row.innerHTML = `<div class="resource-meta">${thumbHtml}</div>
+                         <div style="flex:1">
+                           <div><strong>${r.title || r.filename}</strong></div>
+                           <div class="small" style="margin-top:6px">${r.filename}</div>
+                           <div class="resource-actions" style="margin-top:8px">
+                             <button class="btn preview" data-url="${url}">Previsualizar</button>
+                             <button class="btn open" data-url="${url}">Abrir en pestaña</button>
+                           </div>
+                         </div>`;
+        const preview = document.createElement('div');
+        preview.className = 'resource-preview';
+        row.appendChild(preview);
+        modalContent.appendChild(row);
+
+        const previewBtn = row.querySelector('.preview');
+        const openBtn = row.querySelector('.open');
+
+        previewBtn.addEventListener('click', () => {
+          preview.innerHTML = '';
+          if(!url){ preview.innerHTML = '<p class="small">URL inválida</p>'; return; }
+          if(isImage(url)){
+            const img = document.createElement('img'); img.src = url; preview.appendChild(img);
+          } else if(isPDF(url)){
+            const iframe = document.createElement('iframe'); iframe.src = url; preview.appendChild(iframe);
+          } else if(isYouTube(url)){
+            let vid = '';
+            try{ const m = url.match(/(?:v=|youtu\\.be\/)([A-Za-z0-9_-]{6,})/); vid = m ? m[1] : null; }catch(e){ vid = null; }
+            if(vid){
+              const iframe = document.createElement('iframe');
+              iframe.src = `https://www.youtube.com/embed/${vid}`;
+              iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+              preview.appendChild(iframe);
+            } else {
+              preview.innerHTML = '<p class="small">No se puede previsualizar este enlace. Se abrirá en una nueva pestaña.</p>';
+              window.open(url,'_blank');
+            }
+          } else {
+            preview.innerHTML = '<p class="small">Previsualización no disponible para este formato. Se abrirá en una nueva pestaña.</p>';
+            window.open(url,'_blank');
+          }
+        });
+
+        openBtn.addEventListener('click', () => {
+          if(!url) return alert('URL inválida');
+          // preferir raw.githubusercontent si el archivo es local y quieres forzar descarga/visualización cruda
+          if(!/^https?:\/\//i.test(r.filename) && r.filename){
+            // archivo en repo raíz: construimos la ruta pública en GH Pages relativa
+            const localUrl = normalizeUrl(r.filename);
+            window.open(localUrl, '_blank');
+          } else {
+            window.open(url, '_blank');
+          }
+        });
+      });
+
+      openModal();
+    });
+  });
   </script>
 </body>
 </html>
