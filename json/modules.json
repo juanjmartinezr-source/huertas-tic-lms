@@ -49,6 +49,14 @@
         "type": "link",
         "size": 0,
         "uploadedAt": "2026-07-07T03:59:20.234Z"
+      },
+      {
+        "id": "res-auto-guia-microclima",
+        "title": "Guía de Microclima y Cultivos",
+        "filename": "https://raw.githubusercontent.com/juanjmartinezr-source/huertas-tic-lms/main/Gu%C3%ADa_de_Microclima_y_Cultivos.png",
+        "type": "Imagen",
+        "size": 4897715,
+        "uploadedAt": "2026-07-07T03:20:00Z"
       }
     ]
   },
@@ -79,6 +87,14 @@
         "type": "link",
         "size": 0,
         "uploadedAt": "2026-07-07T03:35:40.210Z"
+      },
+      {
+        "id": "res-auto-blueprint",
+        "title": "Smart Urban Garden Blueprint",
+        "filename": "https://raw.githubusercontent.com/juanjmartinezr-source/huertas-tic-lms/main/Smart_Urban_Garden_Blueprint.pptx",
+        "type": "PPT",
+        "size": 19696427,
+        "uploadedAt": "2026-07-07T03:20:30Z"
       }
     ]
   }
