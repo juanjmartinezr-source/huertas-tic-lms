@@ -41,15 +41,17 @@
       article.className = 'card module';
       article.dataset.id = m.id;
 
-      const resList = (m.resources||[]).map(r => `<li><strong>${r.title}</strong> (${r.type}) - <a href="#" data-resid="${r.id}" class="download">Descargar</a> <button class="btn tiny delete-res" data-resid="${r.id}">Eliminar</button></li>`).join('');
+      const resList = (m.resources||[]).map(r => `<li><strong>${escapeHtml(r.title)}</strong> (${escapeHtml(r.type)}) - <a href="#" data-resid="${r.id}" class="download">Descargar</a> <button class="btn tiny delete-res" data-resid="${r.id}">Eliminar</button></li>`).join('');
 
       article.innerHTML = `
-        <h3 contenteditable='false' class='m-title'>${escapeHtml(m.title)}</h3>
-        <p class='m-desc'>${escapeHtml(m.description)}</p>
-        <div class="row">
-          <button class="btn edit">Editar</button>
-          <button class="btn danger delete">Eliminar</button>
+        <div class="module-header">
+          <h3 class="m-title">${escapeHtml(m.title)}</h3>
+          <div class="module-actions">
+            <button class="btn edit">Editar</button>
+            <button class="btn danger delete">Eliminar</button>
+          </div>
         </div>
+        <p class='m-desc'>${escapeHtml(m.description)}</p>
 
         <div style="margin-top:12px">
           <h4>Recursos</h4>
@@ -70,7 +72,7 @@
       container.appendChild(article);
     });
 
-    // Eventos: editar / borrar / attach / download
+    // Eventos: editar / borrar / attach / download (delegation could be used but reattach is fine here)
     qa('.card.module .edit').forEach(btn=> btn.addEventListener('click', onEditModule));
     qa('.card.module .delete').forEach(btn=> btn.addEventListener('click', onDeleteModule));
     qa('.attachForm').forEach(f => f.addEventListener('submit', onAttachResource));
@@ -92,22 +94,44 @@
     const mod = mods.find(m=>String(m.id)===String(id));
     if(!mod) return;
 
-    // Mostrar modal inline: convertir a inputs
+    // If already in editing mode, ignore
+    if(card.classList.contains('editing')) return;
+    card.classList.add('editing');
+
+    // Replace title and description with inputs
     const titleEl = card.querySelector('.m-title');
     const descEl = card.querySelector('.m-desc');
 
-    const inputT = document.createElement('input'); inputT.value = mod.title; inputT.style.width='100%';
-    const textarea = document.createElement('textarea'); textarea.value = mod.description; textarea.style.width='100%';
+    const inputT = document.createElement('input'); inputT.value = mod.title; inputT.style.width='100%'; inputT.className='edit-title';
+    const textarea = document.createElement('textarea'); textarea.value = mod.description; textarea.style.width='100%'; textarea.className='edit-desc';
 
     titleEl.replaceWith(inputT);
     descEl.replaceWith(textarea);
 
-    ev.target.textContent = 'Guardar';
-    ev.target.removeEventListener('click', onEditModule);
-    ev.target.addEventListener('click', async function save(){
-      mod.title = inputT.value.trim() || 'Sin título';
-      mod.description = textarea.value.trim();
-      saveModules(mods);
+    // Replace action buttons with Save / Cancel
+    const actions = card.querySelector('.module-actions');
+    actions.innerHTML = '';
+    const saveBtn = document.createElement('button'); saveBtn.className='btn primary save'; saveBtn.textContent='Guardar';
+    const cancelBtn = document.createElement('button'); cancelBtn.className='btn cancel'; cancelBtn.textContent='Cancelar';
+    actions.appendChild(saveBtn); actions.appendChild(cancelBtn);
+
+    saveBtn.addEventListener('click', async function onSave(e){
+      e.preventDefault();
+      const newTitle = inputT.value.trim() || 'Sin título';
+      const newDesc = textarea.value.trim();
+      const mlist = await loadModules();
+      const mobj = mlist.find(x=>String(x.id)===String(id));
+      if(!mobj) return alert('Módulo no encontrado (al guardar)');
+      mobj.title = newTitle;
+      mobj.description = newDesc;
+      saveModules(mlist);
+      await refresh();
+    });
+
+    cancelBtn.addEventListener('click', async function onCancel(e){
+      e.preventDefault();
+      // simply re-render without saving
+      card.classList.remove('editing');
       await refresh();
     });
   }
@@ -141,7 +165,7 @@
       files[resId] = { id: resId, name: filename, type, dataURL, size, uploadedAt: new Date().toISOString() };
       saveFilesIndex(files);
 
-      const meta = { id: resId, title, filename, type, size, uploadedAt: files[resId].uploadedAt };
+      const meta = { id: resId, title: title || filename, filename, type, size, uploadedAt: files[resId].uploadedAt };
       mod.resources = mod.resources || [];
       mod.resources.push(meta);
       saveModules(mods);
@@ -154,7 +178,7 @@
       const files = getFilesIndex();
       files[resId] = { id: resId, name: urlInput, type: 'link', dataURL: urlInput, size: 0, uploadedAt: new Date().toISOString() };
       saveFilesIndex(files);
-      const meta = { id: resId, title, filename: urlInput, type: 'link', size:0, uploadedAt: files[resId].uploadedAt };
+      const meta = { id: resId, title: title || urlInput, filename: urlInput, type: 'link', size:0, uploadedAt: files[resId].uploadedAt };
       mod.resources = mod.resources || [];
       mod.resources.push(meta);
       saveModules(mods);
@@ -181,7 +205,7 @@
     const f = files[rid];
     if(!f) return alert('Recurso no encontrado (tal vez se reseteó LocalStorage).');
 
-    // Si es link, abrir en nueva pestaña
+    // If stored as link, open
     if(f.type === 'link' || String(f.dataURL).startsWith('http')){
       window.open(f.dataURL, '_blank');
       return;
