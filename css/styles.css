@@ -1,42 +1,109 @@
 :root{
-  --bg:#f4f6f9;
-  --card:#ffffff;
+  --bg-gradient-start:#f6faf5;
+  --bg-gradient-end:#eef8ef;
+  --card:rgba(255,255,255,0.9);
   --text:#222;
   --muted:#666;
   --primary:#2b8a3e;
   --accent:#2b8a3e;
 }
 [data-theme="dark"]{
-  --bg:#0f1720;
-  --card:#0b1220;
+  --bg-gradient-start:#071014;
+  --bg-gradient-end:#0b1a12;
+  --card:rgba(10,18,20,0.6);
   --text:#e6eef8;
   --muted:#9fb0c6;
   --primary:#66d48a;
 }
 *{box-sizing:border-box;font-family:Inter,system-ui,Arial,Helvetica,sans-serif}
-body{margin:0;background:var(--bg);color:var(--text);min-height:100vh;display:flex}
-.topbar{height:60px;background:linear-gradient(90deg,rgba(255,255,255,0.03),transparent);display:flex;align-items:center;justify-content:space-between;padding:0 16px;position:fixed;left:200px;right:0;top:0;z-index:10}
-.sidebar{width:200px;background:var(--card);padding:16px;border-right:1px solid rgba(0,0,0,0.06);min-height:100vh;position:fixed;left:0;top:0}
+
+/* Subtle themed background with a light leaf pattern (low saturation) */
+body{
+  margin:0;
+  color:var(--text);
+  min-height:100vh;
+  display:flex;
+  /* layered background: soft gradient + very subtle repeating svg leaf pattern */
+  background-color:var(--bg-gradient-start);
+  background-image:
+    linear-gradient(180deg,var(--bg-gradient-start),var(--bg-gradient-end)),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><g fill='%232b8a3e' opacity='0.025'><path d='M10 100c20-30 60-30 80 0s60 30 80 0v90H10z'/></g></svg>");
+  background-repeat:repeat;
+  background-attachment:fixed;
+  background-size:200px 200px, 200px 200px;
+}
+
+/* Topbar and sidebar are slightly translucent so the background shows through softly */
+.topbar{
+  height:60px;
+  background:linear-gradient(90deg,rgba(255,255,255,0.5),rgba(255,255,255,0.35));
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 16px;
+  position:fixed;
+  left:200px;right:0;top:0;z-index:10;
+  backdrop-filter: blur(6px);
+}
+
+.sidebar{
+  width:200px;
+  padding:16px;
+  border-right:1px solid rgba(0,0,0,0.06);
+  min-height:100vh;
+  position:fixed;left:0;top:0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.7));
+  backdrop-filter: blur(6px);
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] .topbar{
+  background:linear-gradient(90deg, rgba(11,18,20,0.45), rgba(11,18,20,0.25));
+}
+[data-theme="dark"] .sidebar{
+  background: linear-gradient(180deg, rgba(6,12,14,0.6), rgba(8,16,18,0.5));
+}
+
 .sidebar .brand{font-weight:700;margin-bottom:12px}
 .sidebar nav a{display:block;padding:8px 0;color:var(--text);text-decoration:none;border-radius:6px}
 .sidebar nav a.active{background:rgba(0,0,0,0.04);padding-left:8px}
+
+/* Main content spacing */
 .main{margin-left:200px;padding:84px 24px 24px 24px;flex:1}
 .container{padding:84px 24px}
 .hero{max-width:960px;margin:0 auto}
 .cards{display:flex;gap:12px;flex-wrap:wrap}
-.card{background:var(--card);padding:16px;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+
+/* Cards with subtle elevation and softer backgrounds */
+.card{background:var(--card);padding:16px;border-radius:8px;box-shadow:0 6px 18px rgba(18,23,20,0.06)}
 .card h3{margin:0 0 8px}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+
 .auth-page{display:flex;min-height:100vh;align-items:center;justify-content:center}
-.auth-card{width:360px;padding:24px;background:var(--card);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.06)}
-input,textarea,select{width:100%;padding:8px;border-radius:6px;border:1px solid rgba(0,0,0,0.08);margin:6px 0}
+.auth-card{width:360px;padding:24px;background:var(--card);border-radius:10px;box-shadow:0 12px 36px rgba(18,23,20,0.06)}
+
+input,textarea,select{width:100%;padding:8px;border-radius:6px;border:1px solid rgba(0,0,0,0.06);margin:6px 0;background:rgba(255,255,255,0.92)}
+
+/* In dark mode inputs should be darker */
+[data-theme="dark"] input, [data-theme="dark"] textarea, [data-theme="dark"] select{
+  background: rgba(255,255,255,0.02);
+  border:1px solid rgba(255,255,255,0.04);
+  color:var(--text);
+}
+
 .btn{display:inline-block;padding:8px 12px;border-radius:6px;border:0;background:transparent;cursor:pointer}
 .btn.primary{background:var(--primary);color:#fff}
 .row{display:flex;gap:8px;align-items:center}
 .small{font-size:13px;color:var(--muted)}
-.loader{position:fixed;left:0;top:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;background:var(--bg);z-index:9999}
+
+/* Loader */
+.loader{position:fixed;left:0;top:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;background:transparent;z-index:9999}
 .spinner{width:48px;height:48px;border-radius:50%;border:6px solid rgba(0,0,0,0.06);border-top-color:var(--primary);animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
+
+/* Module card tweaks */
+.card.module h3{font-size:1.05rem}
+.card.module .resources{margin:8px 0 0;padding-left:18px}
 
 /* Responsive */
 @media(max-width:800px){
