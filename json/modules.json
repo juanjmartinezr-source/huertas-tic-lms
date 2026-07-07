@@ -1,32 +1,85 @@
 [
   {
-    "id":1,
-    "title":"Módulo 1 - Introducción a las Huertas TIC Colombianas",
-    "description":"Contexto y objetivos.",
-    "resources": []
+    "id": 1,
+    "title": "Módulo 1 - Introducción a las Huertas TIC Colombianas",
+    "description": "Contexto y objetivos.",
+    "resources": [
+      {
+        "id": "res-mra39jv5-kjddrb",
+        "title": "introduccion huertas digitales",
+        "filename": "Fundamentación Técnica.docx",
+        "type": "Otro",
+        "size": 21362,
+        "uploadedAt": "2026-07-07T03:27:59.441Z"
+      }
+    ]
   },
   {
-    "id":2,
-    "title":"Módulo 2 - Agricultura sostenible",
-    "description":"Prácticas sostenibles.",
-    "resources": []
+    "id": 2,
+    "title": "Módulo 2 - Agricultura sostenible",
+    "description": "Prácticas sostenibles.",
+    "resources": [
+      {
+        "id": "res-mra3hlsn-0l1x1d",
+        "title": "agricultura sostenible",
+        "filename": "https://docs.google.com/presentation/d/1_wI10_fSaSfmIAWik0E39bMpMEvfRmrH/edit?usp=sharing&ouid=115825427679644998871&rtpof=true&sd=true",
+        "type": "link",
+        "size": 0,
+        "uploadedAt": "2026-07-07T03:34:15.192Z"
+      }
+    ]
   },
   {
-    "id":3,
-    "title":"Módulo 3 - Altitud, Temperatura, Humedad y su efecto",
-    "description":"Clima y su impacto.",
-    "resources": []
+    "id": 3,
+    "title": "Módulo 3 - Altitud, Temperatura, Humedad y su efecto",
+    "description": "Clima y su impacto.",
+    "resources": [
+      {
+        "id": "res-mra40kte-2ximbi",
+        "title": "importancia del clima",
+        "filename": "https://drive.google.com/file/d/19K9LxmBap-8elCuAos03s94tV9R4YebD/view?usp=sharing",
+        "type": "link",
+        "size": 0,
+        "uploadedAt": "2026-07-07T03:49:00.386Z"
+      },
+      {
+        "id": "res-mra4dv3d-r0ck59",
+        "title": "el invernadero ideal",
+        "filename": "https://drive.google.com/file/d/1A3EdkHe3WtwlicetatbGw7ymKxrlV31s/view?usp=sharing",
+        "type": "link",
+        "size": 0,
+        "uploadedAt": "2026-07-07T03:59:20.234Z"
+      }
+    ]
   },
   {
-    "id":4,
-    "title":"Módulo 4 - Tecnologías aplicadas (Sensors, Arduino, ESP32, IoT)",
-    "description":"TIC y herramientas.",
-    "resources": []
+    "id": 4,
+    "title": "Módulo 4 - Tecnologías aplicadas",
+    "description": "TIC y herramientas.",
+    "resources": [
+      {
+        "id": "res-mra3g1z5-kpdo5r",
+        "title": "huerto digital",
+        "filename": "https://drive.google.com/file/d/1cGScxjbEiMzOXPUnMI83sqHOJOXz6m-h/view?usp=sharing",
+        "type": "link",
+        "size": 0,
+        "uploadedAt": "2026-07-07T03:33:02.850Z"
+      }
+    ]
   },
   {
-    "id":5,
-    "title":"Módulo 5 - Diseño de una huerta inteligente",
-    "description":"Proyecto final.",
-    "resources": []
+    "id": 5,
+    "title": "Módulo 5 - Diseño de una huerta inteligente",
+    "description": "Proyecto final.",
+    "resources": [
+      {
+        "id": "res-mra3jfea-15jlbr",
+        "title": "Antecedentes",
+        "filename": "https://youtube.com/watch?v=IBkp2HETrYU&feature=shared",
+        "type": "link",
+        "size": 0,
+        "uploadedAt": "2026-07-07T03:35:40.210Z"
+      }
+    ]
   }
 ]
