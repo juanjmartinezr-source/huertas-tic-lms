@@ -1,0 +1,34 @@
+[
+  {
+    "id":"tomate",
+    "name":"Tomate",
+    "scientific":"Solanum lycopersicum",
+    "image":"assets/tomate.jpg",
+    "temperature": {"min":18,"max":30},
+    "altitude": {"min":0,"max":2500},
+    "humidity": {"min":50,"max":80},
+    "germination_days":"6-14",
+    "harvest_days":"70-100",
+    "watering":"3 veces/semana",
+    "pests":["Mosca blanca","Pulgón"],
+    "diseases":["Mildiu","Tizón"],
+    "regions":["Andina","Caribe"],
+    "recommendations":"Requiere suelo bien drenado, riego regular y buena exposición solar."
+  },
+  {
+    "id":"papa",
+    "name":"Papa",
+    "scientific":"Solanum tuberosum",
+    "image":"assets/papa.jpg",
+    "temperature": {"min":8,"max":25},
+    "altitude": {"min":800,"max":3500},
+    "humidity": {"min":60,"max":80},
+    "germination_days":"10-20",
+    "harvest_days":"90-120",
+    "watering":"2-3 veces/semana",
+    "pests":["Polilla de la papa"],
+    "diseases":["Tizón tardío"],
+    "regions":["Andina"],
+    "recommendations":"Prefiere climas frescos; evita temperaturas altas durante tuberización."
+  }
+]

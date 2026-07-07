@@ -1,0 +1,38 @@
+[
+  {
+    "id": "t-juan",
+    "username": "juan",
+    "password": "1234",
+    "role": "Profesor",
+    "name": "Juan Martínez",
+    "email": "juan@example.com",
+    "progress": {"percent": 0, "activities": []}
+  },
+  {
+    "id": "e-4321",
+    "username": "4321",
+    "password": "4321",
+    "role": "Estudiante",
+    "name": "Estudiante Uno",
+    "email": "est1@example.com",
+    "progress": {"percent": 12, "activities": []}
+  },
+  {
+    "id": "e-4567",
+    "username": "4567",
+    "password": "4567",
+    "role": "Estudiante",
+    "name": "Estudiante Dos",
+    "email": "est2@example.com",
+    "progress": {"percent": 40, "activities": []}
+  },
+  {
+    "id": "e-7890",
+    "username": "7890",
+    "password": "7890",
+    "role": "Estudiante",
+    "name": "Estudiante Tres",
+    "email": "est3@example.com",
+    "progress": {"percent": 80, "activities": []}
+  }
+]

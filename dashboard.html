@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dashboard - Huertas TIC</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand">Huertas TIC</div>
+    <nav>
+      <a href="dashboard.html" class="active">Dashboard</a>
+      <a href="curso.html">Curso</a>
+      <a href="plantar.html">🌱 ¿Qué puedo sembrar?</a>
+      <a id="profileLink" href="#">Perfil</a>
+      <a id="logoutBtn" href="#">Cerrar sesión</a>
+    </nav>
+  </aside>
+
+  <header class="topbar">
+    <div class="search">
+      <input id="search" placeholder="Buscar..." />
+    </div>
+    <div class="actions">
+      <button id="themeToggle" class="btn">🌙</button>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="welcome">
+      <h1 id="welcomeTitle">Bienvenido</h1>
+      <p id="welcomeSub">Progreso: <span id="progressPercent">0%</span></p>
+    </section>
+
+    <section class="grid">
+      <div class="card">
+        <h3>Actividades</h3>
+        <ul id="activitiesList">
+          <li>Cargando actividades...</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>Últimos anuncios</h3>
+        <ul id="announcements">
+          <li>No hay anuncios aún.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>Examen final</h3>
+        <p>Accede al examen desde el curso.</p>
+        <a href="curso.html#examen" class="btn">Ir al examen</a>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    // Dashboard pequeño
+    const user = getCurrentUser();
+    if (!user) location.href = 'login.html';
+
+    document.getElementById('welcomeTitle').textContent = `Hola, ${user.name || user.username}`;
+    document.getElementById('progressPercent').textContent = `${user.progress?.percent || 0}%`;
+
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      logout();
+      location.href = 'login.html';
+    });
+
+    // Actividades mock
+    const activities = [
+      { title: "Leer anuncio inicial", done: true },
+      { title: "Ver Módulo 1", done: false },
+      { title: "Completar actividad Módulo 2", done: false }
+    ];
+    const list = document.getElementById('activitiesList');
+    list.innerHTML = '';
+    activities.forEach(a => {
+      const li = document.createElement('li');
+      li.textContent = `${a.done ? '✅' : '⏳'} ${a.title}`;
+      list.appendChild(li);
+    });
+
+    // Tema
+    document.getElementById('themeToggle').addEventListener('click', () => {
+      toggleTheme();
+    });
+  </script>
+</body>
+</html>

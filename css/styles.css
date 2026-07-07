@@ -1,0 +1,46 @@
+:root{
+  --bg:#f4f6f9;
+  --card:#ffffff;
+  --text:#222;
+  --muted:#666;
+  --primary:#2b8a3e;
+  --accent:#2b8a3e;
+}
+[data-theme="dark"]{
+  --bg:#0f1720;
+  --card:#0b1220;
+  --text:#e6eef8;
+  --muted:#9fb0c6;
+  --primary:#66d48a;
+}
+*{box-sizing:border-box;font-family:Inter,system-ui,Arial,Helvetica,sans-serif}
+body{margin:0;background:var(--bg);color:var(--text);min-height:100vh;display:flex}
+.topbar{height:60px;background:linear-gradient(90deg,rgba(255,255,255,0.03),transparent);display:flex;align-items:center;justify-content:space-between;padding:0 16px;position:fixed;left:200px;right:0;top:0;z-index:10}
+.sidebar{width:200px;background:var(--card);padding:16px;border-right:1px solid rgba(0,0,0,0.06);min-height:100vh;position:fixed;left:0;top:0}
+.sidebar .brand{font-weight:700;margin-bottom:12px}
+.sidebar nav a{display:block;padding:8px 0;color:var(--text);text-decoration:none;border-radius:6px}
+.sidebar nav a.active{background:rgba(0,0,0,0.04);padding-left:8px}
+.main{margin-left:200px;padding:84px 24px 24px 24px;flex:1}
+.container{padding:84px 24px}
+.hero{max-width:960px;margin:0 auto}
+.cards{display:flex;gap:12px;flex-wrap:wrap}
+.card{background:var(--card);padding:16px;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.card h3{margin:0 0 8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.auth-page{display:flex;min-height:100vh;align-items:center;justify-content:center}
+.auth-card{width:360px;padding:24px;background:var(--card);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.06)}
+input,textarea,select{width:100%;padding:8px;border-radius:6px;border:1px solid rgba(0,0,0,0.08);margin:6px 0}
+.btn{display:inline-block;padding:8px 12px;border-radius:6px;border:0;background:transparent;cursor:pointer}
+.btn.primary{background:var(--primary);color:#fff}
+.row{display:flex;gap:8px;align-items:center}
+.small{font-size:13px;color:var(--muted)}
+.loader{position:fixed;left:0;top:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;background:var(--bg);z-index:9999}
+.spinner{width:48px;height:48px;border-radius:50%;border:6px solid rgba(0,0,0,0.06);border-top-color:var(--primary);animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Responsive */
+@media(max-width:800px){
+  .sidebar{display:none}
+  .topbar{left:0}
+  .main{margin-left:0;padding-top:100px}
+}

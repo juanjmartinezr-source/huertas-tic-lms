@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Curso - Huertas TIC</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand">Huertas TIC</div>
+    <nav>
+      <a href="dashboard.html">Dashboard</a>
+      <a class="active" href="curso.html">Curso</a>
+      <a href="plantar.html">🌱 ¿Qué puedo sembrar?</a>
+    </nav>
+  </aside>
+
+  <header class="topbar">
+    <div class="brand-mini">Módulos</div>
+  </header>
+
+  <main class="main">
+    <h1>Curso: Huertas TIC Colombianas</h1>
+    <section id="modules">
+      <!-- Módulos cargados por JS -->
+    </section>
+
+    <section id="examen" class="card">
+      <h2>Examen final</h2>
+      <p>Ejemplo de examen automático con selección múltiple.</p>
+      <a href="exam.html" class="btn">Presentar examen</a>
+    </section>
+  </main>
+
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    const modules = [
+      { id:1, title:"Módulo 1 - Introducción a las Huertas TIC Colombianas", description:"Contexto y objetivos." },
+      { id:2, title:"Módulo 2 - Agricultura sostenible", description:"Practicas sostenibles."},
+      { id:3, title:"Módulo 3 - Altitud, Temperatura, Humedad y su efecto", description:"Clima y su impacto."},
+      { id:4, title:"Módulo 4 - Tecnologías aplicadas (Sensors, Arduino, ESP32, IoT)", description:"TIC y herramientas."},
+      { id:5, title:"Módulo 5 - Diseño de una huerta inteligente", description:"Proyecto final."}
+    ];
+    const container = document.getElementById('modules');
+    modules.forEach(m => {
+      const el = document.createElement('article');
+      el.className = 'card module';
+      el.innerHTML = `<h3>${m.title}</h3><p>${m.description}</p><a class="btn" href="#">Ver recursos</a>`;
+      container.appendChild(el);
+    });
+  </script>
+</body>
+</html>
