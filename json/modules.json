@@ -1,0 +1,32 @@
+[
+  {
+    "id":1,
+    "title":"Módulo 1 - Introducción a las Huertas TIC Colombianas",
+    "description":"Contexto y objetivos.",
+    "resources": []
+  },
+  {
+    "id":2,
+    "title":"Módulo 2 - Agricultura sostenible",
+    "description":"Prácticas sostenibles.",
+    "resources": []
+  },
+  {
+    "id":3,
+    "title":"Módulo 3 - Altitud, Temperatura, Humedad y su efecto",
+    "description":"Clima y su impacto.",
+    "resources": []
+  },
+  {
+    "id":4,
+    "title":"Módulo 4 - Tecnologías aplicadas (Sensors, Arduino, ESP32, IoT)",
+    "description":"TIC y herramientas.",
+    "resources": []
+  },
+  {
+    "id":5,
+    "title":"Módulo 5 - Diseño de una huerta inteligente",
+    "description":"Proyecto final.",
+    "resources": []
+  }
+]

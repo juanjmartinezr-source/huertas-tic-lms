@@ -1,4 +1,4 @@
-// Manejo simple de autenticación usando json/users.json y LocalStorage
+// Extensiones en auth para direccionar al perfil docente y control de acceso
 async function fetchUsers(){
   try{
     const res = await fetch('json/users.json');
@@ -24,10 +24,8 @@ async function loginFormHandler(event){
     return;
   }
   localStorage.setItem('hti_user', JSON.stringify(user));
-  // ejemplo: inicializar progreso si no existe
   if(!user.progress) user.progress = { percent: 0, activities: [] };
   localStorage.setItem('hti_user', JSON.stringify(user));
-  // Redirigir según rol
   location.href = 'dashboard.html';
 }
 
@@ -36,12 +34,28 @@ document.addEventListener('DOMContentLoaded', () => {
   if(form) form.addEventListener('submit', loginFormHandler);
   const demo = document.getElementById('demoBtn');
   if(demo) demo.addEventListener('click', async () => {
-    // auto-login a un estudiante demo 4321 si existe
     const users = await fetchUsers();
     const demoUser = users.find(u => u.username === '4321') || users[0];
     localStorage.setItem('hti_user', JSON.stringify(demoUser));
     location.href = 'dashboard.html';
   });
+
+  // Ajustar enlace de perfil según rol (cuando exista)
+  const profileLink = document.getElementById('profileLink');
+  try{
+    const cur = getCurrentUser();
+    if(profileLink){
+      if(cur && (cur.role === 'Profesor' || cur.role === 'profesor')){
+        profileLink.setAttribute('href','teacher.html');
+        profileLink.textContent = 'Perfil docente';
+      } else if (cur){
+        profileLink.setAttribute('href','profile.html');
+        profileLink.textContent = 'Mi perfil';
+      } else {
+        profileLink.setAttribute('href','login.html');
+      }
+    }
+  }catch(e){/* ignore */}
 });
 
 function getCurrentUser(){

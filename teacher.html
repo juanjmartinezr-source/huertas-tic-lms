@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Perfil docente - Huertas TIC</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand">Huertas TIC</div>
+    <nav>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="curso.html">Curso</a>
+      <a href="plantar.html">🌱 ¿Qué puedo sembrar?</a>
+      <a class="active" href="teacher.html">Perfil docente</a>
+    </nav>
+  </aside>
+
+  <header class="topbar">
+    <div class="brand-mini">Perfil docente</div>
+  </header>
+
+  <main class="main">
+    <h1>Panel docente</h1>
+    <p class="small">En este panel puedes crear, editar y eliminar módulos; además puedes adjuntar recursos (archivos) a cada módulo. Los archivos se guardan en LocalStorage como data URLs (simulación de subida en un sitio estático).</p>
+
+    <section class="card">
+      <h2>Crear módulo</h2>
+      <form id="moduleForm">
+        <label>Título <input id="mTitle" required></label>
+        <label>Descripción <textarea id="mDesc"></textarea></label>
+        <div class="row">
+          <button class="btn primary" type="submit">Crear módulo</button>
+          <button id="resetModules" type="button" class="btn">Resetear módulos (cargar desde JSON)</button>
+        </div>
+      </form>
+    </section>
+
+    <section id="modulesList" class="grid">
+      <!-- módulos renderizados aquí -->
+    </section>
+
+    <section class="card">
+      <h3>Exportar / Guardar</h3>
+      <p class="small">Puedes exportar los módulos actuales a un archivo JSON para descargar o para editar fuera de la aplicación.</p>
+      <div class="row">
+        <button id="exportBtn" class="btn">Descargar módulos (JSON)</button>
+        <button id="clearStorage" class="btn">Limpiar módulos guardados (LocalStorage)</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/auth.js"></script>
+  <script src="js/teacher.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
