@@ -82,18 +82,6 @@
       }
       
     ]
-  },
-  {
-    "id": 6,
-    "title": "Proyecto Final",
-    "description": "Entrega un único enlace que contenga todas las evidencias del proyecto final.",
-    "type": "project",
-    "deadline": "2026-12-01",
-    "instructions": [
-        "Sube un enlace de Google Drive, OneDrive o GitHub.",
-        "El enlace debe contener todos los entregables.",
-        "Incluye informe, evidencias, fotografías, video y archivos adicionales."
-    ]
-}
+  }
 
 ]
