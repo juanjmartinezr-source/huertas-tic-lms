@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Foro - Huertas TIC</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand">Huertas TIC</div>
+    <nav>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="curso.html">Curso</a>
+      <a href="plantar.html">🌱 ¿Qué puedo sembrar?</a>
+      <a class="active" href="forum.html">Foro</a>
+    </nav>
+  </aside>
+
+  <header class="topbar">
+    <div class="brand-mini">Foro de estudiantes</div>
+  </header>
+
+  <main class="main">
+    <h1>Foro: Comparte tus experiencias</h1>
+    <section class="card">
+      <form id="postForm">
+        <label>Título <input id="postTitle" required></label>
+        <label>Contenido <textarea id="postBody" required rows="4"></textarea></label>
+        <label>Adjuntar imagen (opcional) <input id="postFile" type="file" accept="image/*"></label>
+        <div class="row" style="margin-top:8px">
+          <button class="btn primary" type="submit">Publicar</button>
+          <button id="clearForum" type="button" class="btn">Limpiar foro</button>
+        </div>
+      </form>
+    </section>
+
+    <section id="posts" class="grid" style="margin-top:16px">
+      <!-- posts cargados aquí -->
+    </section>
+  </main>
+
+  <script src="js/auth.js"></script>
+  <script>
+    // Foro simple: posts en LocalStorage (hti_forum)
+    function uid(pref='id'){ return pref + '-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2,8); }
+
+    function loadPosts(){
+      try{ return JSON.parse(localStorage.getItem('hti_forum')||'[]'); }catch(e){ return []; }
+    }
+    function savePosts(p){ localStorage.setItem('hti_forum', JSON.stringify(p)); }
+
+    function render(){
+      const container = document.getElementById('posts');
+      container.innerHTML = '';
+      const posts = loadPosts().reverse();
+      if(posts.length===0) container.innerHTML = '<p class="small">Aún no hay publicaciones. Sé el primero en compartir.</p>';
+      posts.forEach(p => {
+        const card = document.createElement('article'); card.className='card';
+        card.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:start"><div><strong>${escapeHtml(p.title)}</strong><div class="small">por ${escapeHtml(p.author||'Anónimo')} • ${new Date(p.createdAt).toLocaleString()}</div></div><div><button class="btn reply" data-id="${p.id}">Responder</button> <button class="btn" data-id="${p.id}" data-action="like">👍 ${p.likes||0}</button></div></div><div style="margin-top:8px">${escapeHtml(p.body)}</div>`;
+        if(p.image) card.innerHTML += `<div style="margin-top:8px"><img src="${p.image}" style="width:100%;max-width:420px;border-radius:6px"></div>`;
+        // replies
+        if(p.replies && p.replies.length){
+          const rhtml = p.replies.map(r=>`<div style="margin-top:8px;padding:8px;background:rgba(0,0,0,0.02);border-radius:6px"><strong>${escapeHtml(r.author)}</strong> <div class="small">${new Date(r.createdAt).toLocaleString()}</div><div style="margin-top:6px">${escapeHtml(r.body)}</div></div>`).join('');
+          card.innerHTML += `<div style="margin-top:12px"><h4>Respuestas</h4>${rhtml}</div>`;
+        }
+        container.appendChild(card);
+      });
+    }
+
+    function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
+
+    document.addEventListener('DOMContentLoaded', ()=>{
+      // auth
+      const user = getCurrentUser() || { username: 'Anon' };
+      const form = document.getElementById('postForm');
+      form.addEventListener('submit', async (e)=>{
+        e.preventDefault();
+        const title = document.getElementById('postTitle').value.trim();
+        const body = document.getElementById('postBody').value.trim();
+        const file = document.getElementById('postFile').files[0];
+        if(!title || !body) return alert('Título y contenido son obligatorios');
+        let dataUrl = null;
+        if(file){
+          if(file.size > 2_000_000) return alert('La imagen debe ser menor a 2MB para almacenar en LocalStorage');
+          dataUrl = await new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=()=>rej(); r.readAsDataURL(file); });
+        }
+        const posts = loadPosts();
+        posts.push({ id: uid('post'), title, body, image: dataUrl, author: user.name || user.username || 'Anon', createdAt: new Date().toISOString(), likes:0, replies: [] });
+        savePosts(posts);
+        form.reset();
+        render();
+      });
+
+      document.getElementById('clearForum').addEventListener('click', ()=>{ if(confirm('Limpiar foro?')){ localStorage.removeItem('hti_forum'); render(); } });
+
+      document.getElementById('posts').addEventListener('click', (e)=>{
+        const likeBtn = e.target.closest('button[data-action="like"]');
+        if(likeBtn){
+          const id = likeBtn.dataset.id;
+          const posts = loadPosts();
+          const p = posts.find(x=>x.id===id);
+          if(p){ p.likes = (p.likes||0)+1; savePosts(posts); render(); }
+          return;
+        }
+        const replyBtn = e.target.closest('button.reply');
+        if(replyBtn){
+          const id = replyBtn.dataset.id; const posts = loadPosts(); const p = posts.find(x=>x.id===id);
+          if(!p) return;
+          const author = getCurrentUser()?.name || getCurrentUser()?.username || 'Anon';
+          const body = prompt('Respuesta:');
+          if(!body) return;
+          p.replies = p.replies || [];
+          p.replies.push({ id: uid('rep'), author, body, createdAt: new Date().toISOString() });
+          savePosts(posts); render();
+        }
+      });
+
+      render();
+    });
+  </script>
+</body>
+</html>
