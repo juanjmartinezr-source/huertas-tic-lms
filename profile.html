@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mi Perfil | Huertas TIC LMS</title>
+
+<link rel="stylesheet" href="css/styles.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+body{
+    margin:0;
+    font-family:'Poppins',sans-serif;
+    background:#eef4ee;
+}
+
+.profile-container{
+    max-width:1000px;
+    margin:40px auto;
+    background:white;
+    border-radius:15px;
+    box-shadow:0 10px 30px rgba(0,0,0,.12);
+    overflow:hidden;
+}
+
+.cover{
+    height:220px;
+    background:linear-gradient(135deg,#2E7D32,#66BB6A);
+    position:relative;
+}
+
+.avatar{
+    position:absolute;
+    left:40px;
+    bottom:-55px;
+    width:120px;
+    height:120px;
+    border-radius:50%;
+    border:5px solid white;
+    background:white;
+    overflow:hidden;
+}
+
+.avatar img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.content{
+    padding:80px 40px 40px;
+}
+
+h1{
+    margin:0;
+    color:#2E7D32;
+}
+
+.subtitle{
+    color:#666;
+    margin-bottom:30px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:20px;
+}
+
+.card{
+    background:#f8faf8;
+    border-radius:12px;
+    padding:20px;
+    box-shadow:0 3px 10px rgba(0,0,0,.08);
+}
+
+.card h3{
+    margin-top:0;
+    color:#2E7D32;
+}
+
+.card input{
+    width:100%;
+    padding:12px;
+    margin-top:8px;
+    border-radius:8px;
+    border:1px solid #ccc;
+    box-sizing:border-box;
+}
+
+button{
+    margin-top:20px;
+    background:#2E7D32;
+    color:white;
+    border:none;
+    padding:12px 25px;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:15px;
+}
+
+button:hover{
+    background:#1B5E20;
+}
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+    margin-top:35px;
+}
+
+.stat{
+    background:#2E7D32;
+    color:white;
+    text-align:center;
+    border-radius:10px;
+    padding:20px;
+}
+
+.stat h2{
+    margin:0;
+    font-size:30px;
+}
+
+.stat p{
+    margin:8px 0 0;
+}
+
+@media(max-width:768px){
+
+.stats{
+grid-template-columns:repeat(2,1fr);
+}
+
+.avatar{
+left:50%;
+transform:translateX(-50%);
+}
+
+.content{
+padding-top:90px;
+text-align:center;
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="profile-container">
+
+<div class="cover">
+
+<div class="avatar">
+
+<img src="https://i.pravatar.cc/200" id="photo">
+
+</div>
+
+</div>
+
+<div class="content">
+
+<h1 id="studentName">Estudiante</h1>
+
+<p class="subtitle">
+Huertas TIC LMS
+</p>
+
+<div class="grid">
+
+<div class="card">
+
+<h3>Información Personal</h3>
+
+<label>Nombre</label>
+
+<input id="name">
+
+<label>Correo</label>
+
+<input id="email">
+
+<label>Programa</label>
+
+<input id="program">
+
+<button onclick="saveProfile()">
+
+Guardar Cambios
+
+</button>
+
+</div>
+
+<div class="card">
+
+<h3>Proyecto Final</h3>
+
+<p id="projectStatus">
+
+Sin entregar.
+
+</p>
+
+<a href="exam.html">
+
+<button>
+
+Ir al Proyecto Final
+
+</button>
+
+</a>
+
+</div>
+
+<div class="card">
+
+<h3>Foro</h3>
+
+<p>
+
+Participa compartiendo tus experiencias durante el curso.
+
+</p>
+
+<a href="forum.html">
+
+<button>
+
+Ir al Foro
+
+</button>
+
+</a>
+
+</div>
+
+</div>
+
+<div class="stats">
+
+<div class="stat">
+
+<h2>12</h2>
+
+<p>Módulos</p>
+
+</div>
+
+<div class="stat">
+
+<h2>80%</h2>
+
+<p>Progreso</p>
+
+</div>
+
+<div class="stat">
+
+<h2>4</h2>
+
+<p>Publicaciones</p>
+
+</div>
+
+<div class="stat">
+
+<h2>1</h2>
+
+<p>Proyecto</p>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+function loadProfile(){
+
+let profile=JSON.parse(localStorage.getItem("profile"))||{};
+
+document.getElementById("name").value=profile.name||"";
+
+document.getElementById("email").value=profile.email||"";
+
+document.getElementById("program").value=profile.program||"";
+
+document.getElementById("studentName").innerHTML=profile.name||"Estudiante";
+
+let project=localStorage.getItem("finalProjectLink");
+
+if(project){
+
+document.getElementById("projectStatus").innerHTML="✅ Proyecto entregado.";
+
+}else{
+
+document.getElementById("projectStatus").innerHTML="❌ Proyecto pendiente.";
+
+}
+
+}
+
+function saveProfile(){
+
+let profile={
+
+name:document.getElementById("name").value,
+
+email:document.getElementById("email").value,
+
+program:document.getElementById("program").value
+
+};
+
+localStorage.setItem("profile",JSON.stringify(profile));
+
+document.getElementById("studentName").innerHTML=profile.name;
+
+alert("Perfil actualizado correctamente.");
+
+}
+
+window.onload=loadProfile;
+
+</script>
+
+</body>
+</html>
