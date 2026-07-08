@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proyecto Final | Huertas TIC LMS</title>
+
+    <link rel="stylesheet" href="css/styles.css">
+
+    <style>
+
+        body{
+            font-family:Arial,Helvetica,sans-serif;
+            background:#eef5ec;
+            margin:0;
+        }
+
+        .container{
+
+            width:90%;
+            max-width:900px;
+
+            margin:40px auto;
+
+            background:#fff;
+
+            padding:35px;
+
+            border-radius:12px;
+
+            box-shadow:0 5px 20px rgba(0,0,0,.15);
+
+        }
+
+        h1{
+
+            color:#2E7D32;
+
+            margin-bottom:10px;
+
+        }
+
+        .info{
+
+            background:#f2f9f1;
+
+            border-left:5px solid #2E7D32;
+
+            padding:20px;
+
+            margin:25px 0;
+
+        }
+
+        ul{
+
+            line-height:1.9;
+
+        }
+
+        input{
+
+            width:100%;
+
+            padding:14px;
+
+            border-radius:8px;
+
+            border:1px solid #bbb;
+
+            margin-top:15px;
+
+            font-size:16px;
+
+        }
+
+        button{
+
+            margin-top:20px;
+
+            background:#2E7D32;
+
+            color:white;
+
+            border:none;
+
+            padding:14px 30px;
+
+            border-radius:8px;
+
+            cursor:pointer;
+
+            font-size:16px;
+
+        }
+
+        button:hover{
+
+            background:#1B5E20;
+
+        }
+
+        #savedLink{
+
+            margin-top:25px;
+
+            background:#f7f7f7;
+
+            padding:15px;
+
+            border-radius:8px;
+
+            display:none;
+
+        }
+
+        a{
+
+            color:#2E7D32;
+
+            word-break:break-all;
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🌱 Proyecto Final</h1>
+
+<p>
+
+Entrega un único enlace donde se encuentren todas las evidencias del proyecto.
+
+</p>
+
+<div class="info">
+
+<h3>El enlace debe contener:</h3>
+
+<ul>
+
+<li>📄 Informe final en PDF</li>
+
+<li>📸 Evidencias fotográficas</li>
+
+<li>🎥 Video del proyecto</li>
+
+<li>💻 Código fuente (si aplica)</li>
+
+<li>📊 Presentación</li>
+
+<li>📁 Archivos adicionales</li>
+
+</ul>
+
+</div>
+
+<label>
+
+<strong>Enlace del Proyecto</strong>
+
+</label>
+
+<input
+
+type="url"
+
+id="projectLink"
+
+placeholder="https://drive.google.com/..."
+
+>
+
+<button onclick="saveProject()">
+
+Guardar Entrega
+
+</button>
+
+<div id="savedLink">
+
+<h3>✅ Entrega registrada</h3>
+
+<p>
+
+Enlace enviado:
+
+</p>
+
+<a
+
+id="link"
+
+target="_blank">
+
+</a>
+
+</div>
+
+</div>
+
+<script>
+
+function saveProject(){
+
+    let url=document.getElementById("projectLink").value.trim();
+
+    if(url==""){
+
+        alert("Ingrese un enlace.");
+
+        return;
+
+    }
+
+    if(!url.startsWith("http")){
+
+        alert("Ingrese un enlace válido.");
+
+        return;
+
+    }
+
+    localStorage.setItem("finalProjectLink",url);
+
+    loadProject();
+
+    alert("Proyecto enviado correctamente.");
+
+}
+
+function loadProject(){
+
+    let url=localStorage.getItem("finalProjectLink");
+
+    if(url){
+
+        document.getElementById("savedLink").style.display="block";
+
+        document.getElementById("link").href=url;
+
+        document.getElementById("link").innerHTML=url;
+
+        document.getElementById("projectLink").value=url;
+
+    }
+
+}
+
+window.onload=loadProject;
+
+</script>
+
+</body>
+</html>
